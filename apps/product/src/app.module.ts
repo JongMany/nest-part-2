@@ -12,6 +12,7 @@ import { ProductModule } from './product/product.module';
       isGlobal: true,
       validationSchema: Joi.object({
         DB_URL: Joi.string().required(),
+        HTTP_PORT: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRootAsync({
