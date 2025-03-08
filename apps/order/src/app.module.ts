@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import * as Joi from 'joi';
 
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { OrderModule } from './order/order.module';
 
 @Module({
@@ -20,6 +21,23 @@ import { OrderModule } from './order/order.module';
         uri: configService.getOrThrow<string>('DB_URL'),
       }),
       inject: [ConfigService],
+    }),
+    // MS 통신 대상 설정
+    ClientsModule.registerAsync({
+      clients: [
+        {
+          name: 'USER_SERVICE', // 여기서 설정된 name 기반으로 DI가 이뤄진다.
+          useFactory: (configService: ConfigService) => ({
+            transport: Transport.TCP,
+            options: {
+              host: 'user', // user container
+              port: 3001, // 모든 TCP 통신은 3001번에서 이뤄진다
+            },
+          }),
+          inject: [ConfigService],
+        },
+      ],
+      isGlobal: true,
     }),
   ],
   controllers: [],
