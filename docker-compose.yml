@@ -75,7 +75,7 @@ services:
       target: development
     command: pnpm run start:dev order
     depends_on:
-      mongodb_order:
+      mongo_order:
         condition: service_healthy
     env_file:
       - ./apps/order/.env
@@ -84,7 +84,7 @@ services:
     volumes:
       - .:/usr/src/app # .: 내 PC의 위치 / /user/src/app: 컨테이너 안의 위치
       - /usr/src/app/node_modules # 동기화를 안하겠다는 의미 (:이 없는 경우) 내 PC의 os 환경과 docker의 os 환경이 일치하지 않은 경우, 다른 모듈이 설치될 수 있기 때문임
-  mongodb_order:
+  mongo_order:
     image: mongo:8
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
@@ -96,6 +96,39 @@ services:
     command: mongod --quiet --logpath /dev/null
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  payment:
+    build:
+      context: .
+      dockerfile: ./apps/payment/Dockerfile
+      target: development
+    command: pnpm run start:dev payment
+    depends_on:
+      postgres_payment:
+        condition: service_healthy
+    env_file:
+      - ./apps/payment/.env
+    ports:
+      - '3004:3000'
+    volumes:
+      - .:/usr/src/app # .: 내 PC의 위치 / /user/src/app: 컨테이너 안의 위치
+      - /usr/src/app/node_modules # 동기화를 안하겠다는 의미 (:이 없는 경우) 내 PC의 os 환경과 docker의 os 환경이 일치하지 않은 경우, 다른 모듈이 설치될 수 있기 때문임
+  postgres_payment:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - '6004:5432'
+    volumes:
+      - ./postgres/payment:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
       timeout: 5s
       retries: 10
