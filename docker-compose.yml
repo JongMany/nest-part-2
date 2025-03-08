@@ -16,9 +16,8 @@ services:
     ports:
       - '3001:3000' # 3001: 내 PC의 포트 / 3000: 컨테이너 안의 포트 => Proxy
     volumes: # 동기화 (HMR을 위해서, 개발용)
-      - .:/user/src/app # .: 내 PC의 위치 / /user/src/app: 컨테이너 안의 위치
-      - /user/src/app/node_modules # 동기화를 안하겠다는 의미 (:이 없는 경우) 내 PC의 os 환경과 docker의 os 환경이 일치하지 않은 경우, 다른 모듈이 설치될 수 있기 때문임
-
+      - .:/usr/src/app # .: 내 PC의 위치 / /user/src/app: 컨테이너 안의 위치
+      - /usr/src/app/node_modules # 동기화를 안하겠다는 의미 (:이 없는 경우) 내 PC의 os 환경과 docker의 os 환경이 일치하지 않은 경우, 다른 모듈이 설치될 수 있기 때문임
   postgres_user:
     image: postgres:16
     environment:
