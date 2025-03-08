@@ -11,6 +11,8 @@ services:
     depends_on:
       postgres_user: # 아래의 postgres_user 서비스에 의존
         condition: service_healthy
+    env_file:
+      - ./apps/user/.env
     ports:
       - '3001:3000' # 3001: 내 PC의 포트 / 3000: 컨테이너 안의 포트 => Proxy
     volumes: # 동기화 (HMR을 위해서, 개발용)

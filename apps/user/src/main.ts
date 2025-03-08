@@ -3,11 +3,11 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.HTTP_PORT ?? 3000);
 }
 bootstrap()
-  .then((res) => {
-    console.log('results', res);
+  .then(() => {
+    console.log('connections is well');
   })
   .catch((error) => {
     console.log('user microservice has an error', error);
