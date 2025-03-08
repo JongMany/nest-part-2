@@ -11,7 +11,10 @@ pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+
+# DB
 postgres
+mongo
 
 # OS
 .DS_Store
