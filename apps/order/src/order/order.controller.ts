@@ -1,13 +1,16 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { GetAuthorization } from 'apps/user/src/auth/decorator/get-authorization.decorator';
 
 import { OrderService } from './order.service';
+import { CreateOrderDto } from './dto/create-order.dto';
 
-@Controller()
+@Controller('order')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @Get()
-  getHello(): string {
-    return this.orderService.getHello();
+  @Post()
+  @UsePipes(ValidationPipe)
+  async createOrder(@GetAuthorization() token: string, @Body() createOrderDto: CreateOrderDto) {
+    return this.orderService.createOrder(createOrderDto, token);
   }
 }
