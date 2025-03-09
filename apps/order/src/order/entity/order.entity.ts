@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-import { Document } from 'mongoose';
+import { Document, ObjectId } from 'mongoose';
 import { Customer, CustomerSchema } from './customer.entity';
 import {
   DeliveryAddress,
@@ -19,7 +19,7 @@ export enum OrderStatus {
 }
 
 @Schema()
-export class Order extends Document {
+export class Order extends Document<ObjectId> {
   @Prop({
     type: CustomerSchema,
     required: true,
