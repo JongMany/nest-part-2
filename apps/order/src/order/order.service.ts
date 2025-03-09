@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { PaymentCancelledException } from './exception/payment-cancelled.exception';
 
 @Injectable()
 export class OrderService {
@@ -13,6 +14,7 @@ export class OrderService {
   async createOrder(createOrderDto: CreateOrderDto, token: string) {
     // 1) 사용자 정보 가져오기
     const user = await this.getUserFromToken(token);
+    console.log(user);
     // 2) 상품 정보 가져오기
     // 3) 총 금액 계산
     // 4) 금액 검증하기 - total이 맞는지 (프론트에서 보내준 데이터와 값이 같은지 검증)
@@ -24,7 +26,7 @@ export class OrderService {
 
   async getUserFromToken(token: string) {
     // 1) User MS: JWT token 검증
-    const response = await lastValueFrom(
+    const tokenResponse = await lastValueFrom(
       this.userService.send(
         {
           cmd: 'parse_bearer_token',
@@ -32,6 +34,19 @@ export class OrderService {
         { token },
       ),
     );
+    if (tokenResponse.status === 'error') {
+      throw new PaymentCancelledException(tokenResponse);
+    }
+
     // 2) User MS: 사용자 정보 가져오기
+    const userId = tokenResponse.data.sub;
+    const userResponse = await lastValueFrom(
+      this.userService.send({ cmd: 'get_user_info' }, { userId }),
+    );
+    if (userResponse.status === 'error') {
+      throw new PaymentCancelledException(userResponse);
+    }
+
+    return userResponse.data;
   }
 }

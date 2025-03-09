@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 import { PaymentMethod } from '../entity/payment.entity';
 
@@ -31,7 +31,7 @@ export class PaymentDto {
   @IsNotEmpty()
   passwordTwoDigits: string;
 
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  amount: string;
+  amount: number;
 }
