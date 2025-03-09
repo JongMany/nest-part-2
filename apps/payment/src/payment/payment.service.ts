@@ -1,4 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { NOTIFICATION_SERVICE } from '@app/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MakePaymentDto } from './dto/make-payment.dto';
@@ -9,6 +11,8 @@ export class PaymentService {
   constructor(
     @InjectRepository(Payment)
     private readonly paymentRepository: Repository<Payment>,
+    @Inject(NOTIFICATION_SERVICE)
+    private readonly nofiticationService: ClientProxy,
   ) {}
 
   async makePayment(makePaymentDto: MakePaymentDto) {
@@ -20,8 +24,6 @@ export class PaymentService {
       await this.processPayment();
 
       await this.updatePaymentStatus(paymentId, PaymentStatus.approved);
-
-      // TODO notification
 
       return this.paymentRepository.findOneBy({ id: paymentId });
     } catch (error) {

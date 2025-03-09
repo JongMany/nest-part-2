@@ -167,6 +167,7 @@ export class OrderService {
             cmd: 'make_payment',
           },
           {
+            orderId,
             ...paymentDto,
             userEmail: email,
           },
