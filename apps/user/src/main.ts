@@ -6,6 +6,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // MSA를 위한 설정
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.TCP,
     options: {
@@ -13,8 +14,8 @@ async function bootstrap() {
       port: parseInt(process.env.TCP_PORT || '3001'),
     },
   });
-
   await app.startAllMicroservices();
+
   await app.listen(process.env.HTTP_PORT ?? 3000);
 }
 bootstrap()
