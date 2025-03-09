@@ -1,5 +1,9 @@
-import { PAYMENT_SERVICE, PRODUCT_SERVICE, USER_SERVICE } from '@app/common';
-import { RpcResponse } from '@app/common/types/response.type';
+import {
+  PAYMENT_SERVICE,
+  PRODUCT_SERVICE,
+  RpcResponse,
+  USER_SERVICE,
+} from '@app/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
