@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { SendPaymentNotificationDto } from './dto/send-payment-notification.dto';
 
 @Injectable()
 export class NotificationService {
-  getHello(): string {
-    return 'Hello World!';
+  async sendPaymentNotification(
+    sendPaymentNotificationDto: SendPaymentNotificationDto,
+  ) {
+    
   }
 }

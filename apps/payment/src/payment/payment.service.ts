@@ -2,6 +2,7 @@ import { NOTIFICATION_SERVICE } from '@app/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
+import { lastValueFrom } from 'rxjs';
 import { Repository } from 'typeorm';
 import { MakePaymentDto } from './dto/make-payment.dto';
 import { Payment, PaymentStatus } from './entity/payment.entity';
@@ -25,6 +26,8 @@ export class PaymentService {
 
       await this.updatePaymentStatus(paymentId, PaymentStatus.approved);
 
+      this.sendNotification(makePaymentDto.orderId, makePaymentDto.userEmail);
+
       return this.paymentRepository.findOneBy({ id: paymentId });
     } catch (error) {
       if (paymentId) {
@@ -47,6 +50,20 @@ export class PaymentService {
       {
         paymentStatus,
       },
+    );
+  }
+
+  async sendNotification(orderId: string, to: string) {
+    const response = await lastValueFrom(
+      this.nofiticationService.send(
+        {
+          cmd: 'send_payment_notification',
+        },
+        {
+          to,
+          orderId,
+        },
+      ),
     );
   }
 }
