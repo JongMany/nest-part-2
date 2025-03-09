@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
+import { Document } from 'mongoose';
 import { Customer, CustomerSchema } from './customer.entity';
 import {
   DeliveryAddress,
@@ -26,7 +27,7 @@ export class Order extends Document {
   customer: Customer;
 
   @Prop({
-    type: ProductSchema,
+    type: [ProductSchema],
     required: true,
   })
   products: Product[];
