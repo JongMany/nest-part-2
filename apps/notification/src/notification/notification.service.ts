@@ -1,4 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { ORDER_SERVICE } from '@app/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SendPaymentNotificationDto } from './dto/send-payment-notification.dto';
@@ -9,6 +11,8 @@ export class NotificationService {
   constructor(
     @InjectModel(Notification.name)
     private readonly notificationModel: Model<Notification>,
+    @Inject(ORDER_SERVICE)
+    private readonly orderService: ClientProxy,
   ) {}
 
   async sendPaymentNotification(
@@ -24,11 +28,12 @@ export class NotificationService {
     );
 
     // 메일을 보냈으면 배송이 시작되었다는 뜻
+    this.sendDeliveryStartedMessage(orderId);
 
     return this.notificationModel.findById(notification._id);
   }
 
-  async createNotification(to: string) {
+  private async createNotification(to: string) {
     return this.notificationModel.create({
       from: 'blackberry1114@naver.com',
       to,
@@ -37,16 +42,27 @@ export class NotificationService {
     });
   }
 
-  async sendEmail() {
+  private async sendEmail() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 
-  async updateNotificationStatus(
+  private async updateNotificationStatus(
     notificationId: string,
     status: NotificationStatus,
   ) {
     return this.notificationModel.findByIdAndUpdate(notificationId, {
       status,
     });
+  }
+
+  private async sendDeliveryStartedMessage(orderId: string) {
+    this.orderService.send(
+      {
+        cmd: 'delivery_started',
+      },
+      {
+        id: orderId,
+      },
+    );
   }
 }

@@ -200,4 +200,8 @@ export class OrderService {
       throw error;
     }
   }
+
+  async changeOrderStatus(orderId: string, status: OrderStatus) {
+    return this.orderModel.findByIdAndUpdate(orderId, { status });
+  }
 }
