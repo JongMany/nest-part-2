@@ -37,12 +37,15 @@ export class PaymentService {
     }
   }
 
-  async processPayment() {
+  private async processPayment() {
     // 실제 결제 로직이 들어가야 함.
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 
-  async updatePaymentStatus(paymentId: string, paymentStatus: PaymentStatus) {
+  private async updatePaymentStatus(
+    paymentId: string,
+    paymentStatus: PaymentStatus,
+  ) {
     await this.paymentRepository.update(
       {
         id: paymentId,
@@ -53,7 +56,7 @@ export class PaymentService {
     );
   }
 
-  async sendNotification(orderId: string, to: string) {
+  private async sendNotification(orderId: string, to: string) {
     const response = await lastValueFrom(
       this.nofiticationService.send(
         {

@@ -56,7 +56,7 @@ export class NotificationService {
   }
 
   private async sendDeliveryStartedMessage(orderId: string) {
-    this.orderService.send(
+    this.orderService.emit(
       {
         cmd: 'delivery_started',
       },
