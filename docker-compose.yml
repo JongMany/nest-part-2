@@ -2,6 +2,20 @@
 version: '3.1'
 
 services:
+  gateway: # 서비스명
+    build:
+      context: . # 현재 위치로부터
+      dockerfile: ./apps/gateway/Dockerfile
+      target: development # docker-compose는 개발단계에서만 사용할 것이므로 (development stage까지만 실행)
+    command: pnpm run start:dev gateway # 커맨드 오버라이드
+    env_file:
+      - ./apps/gateway/.env
+    ports:
+      - '3000:3000' # 3001: 내 PC의 포트 / 3000: 컨테이너 안의 포트 => Proxy
+    volumes: # 동기화 (HMR을 위해서, 개발용)
+      - .:/usr/src/app # .: 내 PC의 위치 / /user/src/app: 컨테이너 안의 위치
+      - /usr/src/app/node_modules # 동기화를 안하겠다는 의미 (:이 없는 경우) 내 PC의 os 환경과 docker의 os 환경이 일치하지 않은 경우, 다른 모듈이 설치될 수 있기 때문임
+
   user: # 서비스명
     build:
       context: . # 현재 위치로부터

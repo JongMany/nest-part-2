@@ -26,6 +26,7 @@ export class PaymentService {
 
       await this.updatePaymentStatus(paymentId, PaymentStatus.approved);
 
+      // 이 부분은 message pattern (주문 상태가 변경될 때)
       this.sendNotification(makePaymentDto.orderId, makePaymentDto.userEmail);
 
       return this.paymentRepository.findOneBy({ id: paymentId });
