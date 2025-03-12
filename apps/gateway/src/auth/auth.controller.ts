@@ -20,7 +20,7 @@ export class AuthController {
   }
 
   @Post('login')
-  loginUser(@GetAuthorization() token: string) {
+  async loginUser(@GetAuthorization() token: string) {
     if (token === null) {
       throw new UnauthorizedException('토큰을 입력해주세요');
     }
