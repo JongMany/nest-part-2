@@ -6,7 +6,8 @@ import {
 } from '@nestjs/common';
 
 import { RpcInterceptor } from '@app/common';
-import { EventPattern, Payload } from '@nestjs/microservices';
+import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
+import { CreateOrderDto } from './dto/create-order.dto';
 import { DeliveryStartedDto } from './dto/delivery-started.dto';
 import { OrderStatus } from './entity/order.entity';
 import { OrderService } from './order.service';
@@ -23,6 +24,14 @@ export class OrderController {
   // ) {
   //   return this.orderService.createOrder(createOrderDto, token);
   // }
+  @MessagePattern({
+    cmd: 'create_order',
+  })
+  async createOrder(@Payload() createOrderDto: CreateOrderDto) {
+    const { token } = createOrderDto;
+
+    return this.orderService.createOrder(createOrderDto, token);
+  }
 
   @EventPattern({
     cmd: 'delivery_started',

@@ -6,10 +6,10 @@ import { ClientProxy } from '@nestjs/microservices';
 export class ProductService {
   constructor(
     @Inject(PRODUCT_SERVICE)
-    private readonly productService: ClientProxy,
+    private readonly productMicroservice: ClientProxy,
   ) {}
   createSamples() {
-    return this.productService.send(
+    return this.productMicroservice.send(
       {
         cmd: 'create_samples',
       },
