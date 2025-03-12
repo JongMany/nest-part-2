@@ -9,8 +9,9 @@ import {
 import { RpcInterceptor } from '@app/common';
 import { MessagePattern, Payload, Transport } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
 import { ParseBearerTokenDto } from './dto/parse-bearer-token.dto';
-import { RegisterDto } from './dto/register-dto';
+import { RegisterDto } from './dto/register.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -43,12 +44,24 @@ export class AuthController {
     cmd: 'register',
   })
   registerUser(@Payload() registerDto: RegisterDto) {
-    const { token, ...rest } = registerDto;
+    const { token } = registerDto;
     if (token === null) {
       throw new UnauthorizedException('토큰을 입력해주세요');
     }
 
     return this.authService.register(token, registerDto);
+  }
+
+  @MessagePattern({
+    cmd: 'login',
+  })
+  loginUser(@Payload() loginDto: LoginDto) {
+    const { token } = loginDto;
+    if (token === null) {
+      throw new UnauthorizedException('토큰을 입력해주세요');
+    }
+
+    return this.authService.login(token);
   }
 
   @MessagePattern(

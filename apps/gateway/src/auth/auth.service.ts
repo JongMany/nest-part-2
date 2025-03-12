@@ -25,5 +25,16 @@ export class AuthService {
     );
   }
 
-  login(token: string) {}
+  login(token: string) {
+    return lastValueFrom(
+      this.userMicroservice.send(
+        {
+          cmd: 'login',
+        },
+        {
+          token,
+        },
+      ),
+    );
+  }
 }
