@@ -1,6 +1,5 @@
 import {
   Controller,
-  Post,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
@@ -15,9 +14,18 @@ import { ProductService } from './product.service';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Post('sample')
-  createSamples() {
-    return this.productService.createSamples();
+  // @Post('sample')
+  // createSamples() {
+  //   return this.productService.createSamples();
+  // }
+  @MessagePattern({
+    cmd: 'create_samples',
+  })
+  @UseInterceptors(RpcInterceptor)
+  @UsePipes(ValidationPipe)
+  async createSamples() {
+    const response = await this.productService.createSamples();
+    return response;
   }
 
   @MessagePattern({
