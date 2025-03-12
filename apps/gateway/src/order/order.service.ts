@@ -1,4 +1,4 @@
-import { ORDER_SERVICE } from '@app/common';
+import { ORDER_SERVICE, UserMeta, UserPayloadDto } from '@app/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
@@ -10,15 +10,20 @@ export class OrderService {
     @Inject(ORDER_SERVICE)
     private readonly orderMicroservice: ClientProxy,
   ) {}
-  async createOrder(createOrderDto: CreateOrderDto, token: string) {
+  async createOrder(
+    createOrderDto: CreateOrderDto,
+    userPayload: UserPayloadDto,
+  ) {
     return lastValueFrom(
-      this.orderMicroservice.send(
+      this.orderMicroservice.send<any, CreateOrderDto & UserMeta>(
         {
           cmd: 'create_order',
         },
         {
           ...createOrderDto,
-          token,
+          meta: {
+            user: userPayload,
+          },
         },
       ),
     );

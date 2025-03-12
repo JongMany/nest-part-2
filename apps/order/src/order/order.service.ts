@@ -37,10 +37,10 @@ export class OrderService {
     @InjectModel(Order.name)
     private readonly orderModel: Model<Order>,
   ) {}
-  async createOrder(createOrderDto: CreateOrderDto, token: string) {
-    const { productIds, address, payment } = createOrderDto;
+  async createOrder(createOrderDto: CreateOrderDto) {
+    const { productIds, address, payment, meta } = createOrderDto;
     // 1) 사용자 정보 가져오기
-    const user = await this.getUserFromToken(token);
+    const user = await this.getUserFromToken(meta.user.sub);
 
     // 2) 상품 정보 가져오기
     const products = await this.getProductsByIds(productIds);
@@ -71,22 +71,22 @@ export class OrderService {
     return this.orderModel.findById(order._id);
   }
 
-  private async getUserFromToken(token: string): Promise<User> {
-    // 1) User MS: JWT token 검증
-    const tokenResponse = await lastValueFrom(
-      this.userService.send(
-        {
-          cmd: 'parse_bearer_token',
-        },
-        { token },
-      ),
-    );
-    if (tokenResponse.status === 'error') {
-      throw new PaymentCancelledException(tokenResponse);
-    }
+  private async getUserFromToken(userId: string): Promise<User> {
+    // 1) User MS: JWT token 검증 => 이부분 Middleware + Guard에서 처리
+    // const tokenResponse = await lastValueFrom(
+    //   this.userService.send(
+    //     {
+    //       cmd: 'parse_bearer_token',
+    //     },
+    //     { token },
+    //   ),
+    // );
+    // if (tokenResponse.status === 'error') {
+    //   throw new PaymentCancelledException(tokenResponse);
+    // }
 
     // 2) User MS: 사용자 정보 가져오기
-    const userId = tokenResponse.data.sub;
+    // const userId = tokenResponse.data.sub;
     const userResponse = await lastValueFrom(
       this.userService.send({ cmd: 'get_user_info' }, { userId }),
     );

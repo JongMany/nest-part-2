@@ -28,9 +28,7 @@ export class OrderController {
     cmd: 'create_order',
   })
   async createOrder(@Payload() createOrderDto: CreateOrderDto) {
-    const { token } = createOrderDto;
-
-    return this.orderService.createOrder(createOrderDto, token);
+    return this.orderService.createOrder(createOrderDto);
   }
 
   @EventPattern({
