@@ -1,5 +1,6 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { GetAuthorization } from '../auth/decorator/get-authorization.decorator';
+import { TokenGuard } from '../auth/guard/token.guard';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderService } from './order.service';
 
@@ -8,6 +9,7 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Post()
+  @UseGuards(TokenGuard)
   async createOrder(
     @GetAuthorization() token: string,
     @Body() createOrderDto: CreateOrderDto,
