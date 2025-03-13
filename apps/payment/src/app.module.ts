@@ -31,12 +31,18 @@ import { PaymentModule } from './payment/payment.module';
           name: NOTIFICATION_SERVICE, // 여기서 설정된 name 기반으로 DI가 이뤄진다.
           useFactory: (configService: ConfigService) => ({
             // transport: Transport.TCP,
-            transport: Transport.REDIS,
+            // transport: Transport.REDIS,
+            transport: Transport.RMQ,
             options: {
               // host: configService.getOrThrow<string>('NOTIFICATION_HOST'),
               // port: configService.getOrThrow<number>('NOTIFICATION_TCP_PORT'), // 모든 TCP 통신은 3001번에서 이뤄진다
-              host: 'redis',
-              port: 6379,
+              // host: 'redis',
+              // port: 6379,
+              urls: ['amqp://rabbitmq:5672'],
+              queue: 'notification_queue',
+              queueOptions: {
+                durable: false,
+              },
             },
           }),
           inject: [ConfigService],

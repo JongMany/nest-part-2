@@ -9,12 +9,18 @@ async function bootstrap() {
   // MSA를 위한 설정
   app.connectMicroservice<MicroserviceOptions>({
     // transport: Transport.TCP,
-    transport: Transport.REDIS,
+    // transport: Transport.REDIS,
+    transport: Transport.RMQ,
     options: {
       // host: '0.0.0.0', // 모든 곳에서 오는 요청을 받음
       // port: parseInt(process.env.TCP_PORT || '3001'),
-      host: 'redis',
-      port: 6379,
+      // host: 'redis',
+      // port: 6379,
+      urls: ['amqp://rabbitmq:5672'],
+      queue: 'notification_queue',
+      queueOptions: {
+        durable: false,
+      },
     },
   });
   await app.startAllMicroservices();

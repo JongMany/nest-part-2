@@ -29,12 +29,18 @@ import { NotificationModule } from './notification/notification.module';
           name: ORDER_SERVICE, // 여기서 설정된 name 기반으로 DI가 이뤄진다.
           useFactory: (configService: ConfigService) => ({
             // transport: Transport.TCP,
-            transport: Transport.REDIS,
+            // transport: Transport.REDIS,
+            transport: Transport.RMQ,
             options: {
               // host: configService.getOrThrow<string>('ORDER_HOST'),
               // port: configService.getOrThrow<number>('ORDER_TCP_PORT'), // 모든 TCP 통신은 3001번에서 이뤄진다
-              host: 'redis',
-              port: 6379,
+              // host: 'redis',
+              // port: 6379,
+              urls: ['amqp://rabbitmq:5672'],
+              queue: 'order_queue',
+              queueOptions: {
+                durable: false,
+              },
             },
           }),
           inject: [ConfigService],

@@ -36,12 +36,18 @@ import { OrderModule } from './order/order.module';
           name: USER_SERVICE, // 여기서 설정된 name 기반으로 DI가 이뤄진다.
           useFactory: (configService: ConfigService) => ({
             // transport: Transport.TCP,
-            transport: Transport.REDIS,
+            // transport: Transport.REDIS,
+            transport: Transport.RMQ,
             options: {
               // host: configService.getOrThrow<string>('USER_HOST'), // user container
               // port: configService.getOrThrow<number>('USER_TCP_PORT'), // 모든 TCP 통신은 3001번에서 이뤄진다
-              host: 'redis',
-              port: 6379,
+              // host: 'redis',
+              // port: 6379,
+              urls: ['amqp://rabbitmq:5672'],
+              queue: 'user_queue',
+              queueOptions: {
+                durable: false,
+              },
             },
           }),
           inject: [ConfigService],
@@ -50,12 +56,18 @@ import { OrderModule } from './order/order.module';
           name: PRODUCT_SERVICE, // 여기서 설정된 name 기반으로 DI가 이뤄진다.
           useFactory: (configService: ConfigService) => ({
             // transport: Transport.TCP,
-            transport: Transport.REDIS,
+            // transport: Transport.REDIS,
+            transport: Transport.RMQ,
             options: {
               // host: configService.getOrThrow<string>('PRODUCT_HOST'), // user container
               // port: configService.getOrThrow<number>('PRODUCT_TCP_PORT'), // 모든 TCP 통신은 3001번에서 이뤄진다
-              host: 'redis',
-              port: 6379,
+              // host: 'redis',
+              // port: 6379,
+              urls: ['amqp://rabbitmq:5672'],
+              queue: 'product_queue',
+              queueOptions: {
+                durable: false,
+              },
             },
           }),
           inject: [ConfigService],
@@ -64,12 +76,18 @@ import { OrderModule } from './order/order.module';
           name: PAYMENT_SERVICE, // 여기서 설정된 name 기반으로 DI가 이뤄진다.
           useFactory: (configService: ConfigService) => ({
             // transport: Transport.TCP,
-            transport: Transport.REDIS,
+            // transport: Transport.REDIS,
+            transport: Transport.RMQ,
             options: {
               // host: configService.getOrThrow<string>('PAYMENT_HOST'), // user container
               // port: configService.getOrThrow<number>('PAYMENT_TCP_PORT'), // 모든 TCP 통신은 3001번에서 이뤄진다
-              host: 'redis',
-              port: 6379,
+              // host: 'redis',
+              // port: 6379,
+              urls: ['amqp://rabbitmq:5672'],
+              queue: 'payment_queue',
+              queueOptions: {
+                durable: false,
+              },
             },
           }),
           inject: [ConfigService],
