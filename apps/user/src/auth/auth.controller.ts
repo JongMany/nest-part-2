@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 
 import { RpcInterceptor } from '@app/common';
-import { MessagePattern, Payload, Transport } from '@nestjs/microservices';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { ParseBearerTokenDto } from './dto/parse-bearer-token.dto';
@@ -68,7 +68,7 @@ export class AuthController {
     {
       cmd: 'parse_bearer_token',
     },
-    Transport.TCP,
+    // Transport.TCP,
   )
   @UsePipes(ValidationPipe)
   @UseInterceptors(RpcInterceptor)
