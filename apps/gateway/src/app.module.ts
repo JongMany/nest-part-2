@@ -29,10 +29,12 @@ import { ProductModule } from './product/product.module';
         {
           name: USER_SERVICE, // 여기서 설정된 name 기반으로 DI가 이뤄진다.
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.TCP,
+            transport: Transport.REDIS,
             options: {
-              host: configService.getOrThrow<string>('USER_HOST'), // user container
-              port: configService.getOrThrow<number>('USER_TCP_PORT'), // 모든 TCP 통신은 3001번에서 이뤄진다
+              // host: configService.getOrThrow<string>('USER_HOST'), // user container
+              // port: configService.getOrThrow<number>('USER_TCP_PORT'), // 모든 TCP 통신은 3001번에서 이뤄진다
+              host: 'redis',
+              port: 6379,
             },
           }),
           inject: [ConfigService],
@@ -40,10 +42,12 @@ import { ProductModule } from './product/product.module';
         {
           name: PRODUCT_SERVICE, // 여기서 설정된 name 기반으로 DI가 이뤄진다.
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.TCP,
+            transport: Transport.REDIS,
             options: {
-              host: configService.getOrThrow<string>('PRODUCT_HOST'), // user container
-              port: configService.getOrThrow<number>('PRODUCT_TCP_PORT'), // 모든 TCP 통신은 3001번에서 이뤄진다
+              // host: configService.getOrThrow<string>('PRODUCT_HOST'), // user container
+              // port: configService.getOrThrow<number>('PRODUCT_TCP_PORT'), // 모든 TCP 통신은 3001번에서 이뤄진다
+              host: 'redis',
+              port: 6379,
             },
           }),
           inject: [ConfigService],
@@ -51,10 +55,12 @@ import { ProductModule } from './product/product.module';
         {
           name: ORDER_SERVICE, // 여기서 설정된 name 기반으로 DI가 이뤄진다.
           useFactory: (configService: ConfigService) => ({
-            transport: Transport.TCP,
+            transport: Transport.REDIS,
             options: {
-              host: configService.getOrThrow<string>('ORDER_HOST'), // user container
-              port: configService.getOrThrow<number>('ORDER_TCP_PORT'), // 모든 TCP 통신은 3001번에서 이뤄진다
+              // host: configService.getOrThrow<string>('ORDER_HOST'), // user container
+              // port: configService.getOrThrow<number>('ORDER_TCP_PORT'), // 모든 TCP 통신은 3001번에서 이뤄진다
+              host: 'redis',
+              port: 6379,
             },
           }),
           inject: [ConfigService],
