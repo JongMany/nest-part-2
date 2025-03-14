@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package notification
+package notification;
 
 service NotificationService {
-  rpc SendPaymentNotification(SendPaymentNotificationRequest) returns SendPaymentNotificationResponse
+  rpc SendPaymentNotification(SendPaymentNotificationRequest) returns (SendPaymentNotificationResponse);
 }
 
 message SendPaymentNotificationRequest {
