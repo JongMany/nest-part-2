@@ -13,7 +13,7 @@ export class UserController implements UserMicroservice.UserServiceController {
   // @UseInterceptors(RpcInterceptor)
   // @UsePipes(ValidationPipe)
   // getUserInfo(@Payload() data: GetUserInfoDto) {
-  getUserInfo(data: UserMicroservice.GetUserInfoRequest) {
-    return this.userService.getUserById(data.userId);
+  getUserInfo(request: UserMicroservice.GetUserInfoRequest) {
+    return this.userService.getUserById(request.userId);
   }
 }

@@ -65,9 +65,9 @@ export class AuthController implements UserMicroservice.AuthServiceController {
   // )
   // @UsePipes(ValidationPipe)
   // @UseInterceptors(RpcInterceptor)
-  parseBearerToken(payload: UserMicroservice.ParseBearerTokenRequest) {
+  parseBearerToken(request: UserMicroservice.ParseBearerTokenRequest) {
     return this.authService.parseBearerToken({
-      token: payload.token,
+      token: request.token,
       isRefreshToken: false,
     });
   }

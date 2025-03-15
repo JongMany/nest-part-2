@@ -1,13 +1,6 @@
-import {
-  Controller,
-  UseInterceptors,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 
-import { NotificationMicroservice, RpcInterceptor } from '@app/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
-import { SendPaymentNotificationDto } from './dto/send-payment-notification.dto';
+import { NotificationMicroservice } from '@app/common';
 import { NotificationService } from './notification.service';
 
 @Controller()
@@ -16,19 +9,20 @@ export class NotificationController
 {
   constructor(private readonly notificationService: NotificationService) {}
 
-  @MessagePattern({
-    cmd: 'send_payment_notification',
-  })
-  @UsePipes(ValidationPipe)
-  @UseInterceptors(RpcInterceptor)
+  // @MessagePattern({
+  //   cmd: 'send_payment_notification',
+  // })
+  // @UsePipes(ValidationPipe)
+  // @UseInterceptors(RpcInterceptor)
   async sendPaymentNotification(
-    payload: NotificationMicroservice.SendPaymentNotificationRequest,
+    request: NotificationMicroservice.SendPaymentNotificationRequest,
   ) {
-    const response = await this.notificationService.sendPaymentNotification(payload);
+    const response =
+      await this.notificationService.sendPaymentNotification(request);
     const data = response?.toJSON();
     return {
       ...data,
       status: data?.status.toString(),
-    }
+    };
   }
 }

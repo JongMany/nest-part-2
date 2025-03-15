@@ -28,9 +28,9 @@ export class ProductController
   // })
   // @UseInterceptors(RpcInterceptor)
   // @UsePipes(ValidationPipe)
-  async getProductsInfo(payload: ProductMicroservice.GetProductsInfoRequest) {
+  async getProductsInfo(request: ProductMicroservice.GetProductsInfoRequest) {
     const response = await this.productService.getProductsInfo(
-      payload.productIds,
+      request.productIds,
     );
     return {
       products: response,
