@@ -40,6 +40,7 @@ export class AuthController implements UserMicroservice.AuthServiceController {
     }
 
     const user = await this.authService.register(token, registerDto);
+    console.log('user', user);
     if (!user) {
       throw new UnauthorizedException('정상적으로 유저가 등록되지 않았습니다');
     }
@@ -50,6 +51,7 @@ export class AuthController implements UserMicroservice.AuthServiceController {
   //   cmd: 'login',
   // })
   loginUser(loginDto: UserMicroservice.LoginUserRequest) {
+    console.log('loginDto', loginDto);
     const { token } = loginDto;
     if (token === null) {
       throw new UnauthorizedException('토큰을 입력해주세요');

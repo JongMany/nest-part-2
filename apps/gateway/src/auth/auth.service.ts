@@ -16,7 +16,7 @@ export class AuthService implements OnModuleInit {
   onModuleInit() {
     this.authService =
       this.userMicroservice.getService<UserMicroservice.AuthServiceClient>(
-        'UserService',
+        'AuthService',
       );
   }
 
