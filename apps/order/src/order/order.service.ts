@@ -4,7 +4,11 @@ import {
   RpcResponse,
   USER_SERVICE,
 } from '@app/common';
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import { MakePaymentDto } from 'apps/payment/src/payment/dto/make-payment.dto';
@@ -68,7 +72,11 @@ export class OrderService {
     );
 
     // 7) 결과 반환
-    return this.orderModel.findById(order._id);
+    const orderModel = await this.orderModel.findById(order._id);
+    if (!orderModel) {
+      throw new InternalServerErrorException('서버에서 에러가 발생했습니다.');
+    }
+    return orderModel;
   }
 
   private async getUserFromToken(userId: string): Promise<User> {
