@@ -3,8 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import * as Joi from 'joi';
 
-import { ORDER_SERVICE } from '@app/common';
+import { ORDER_SERVICE, OrderMicroservice } from '@app/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { join } from 'path';
 import { NotificationModule } from './notification/notification.module';
 
 @Module({
@@ -30,17 +31,21 @@ import { NotificationModule } from './notification/notification.module';
           useFactory: (configService: ConfigService) => ({
             // transport: Transport.TCP,
             // transport: Transport.REDIS,
-            transport: Transport.RMQ,
+            // transport: Transport.RMQ,
+            transport: Transport.GRPC,
             options: {
               // host: configService.getOrThrow<string>('ORDER_HOST'),
               // port: configService.getOrThrow<number>('ORDER_TCP_PORT'), // 모든 TCP 통신은 3001번에서 이뤄진다
               // host: 'redis',
               // port: 6379,
-              urls: ['amqp://rabbitmq:5672'],
-              queue: 'order_queue',
-              queueOptions: {
-                durable: false,
-              },
+              // urls: ['amqp://rabbitmq:5672'],
+              // queue: 'order_queue',
+              // queueOptions: {
+              //   durable: false,
+              // },
+              package: OrderMicroservice.protobufPackage,
+              protoPath: join(process.cwd(), 'proto/order.proto'),
+              url: configService.getOrThrow<string>('ORDER_GRPC_URL'),
             },
           }),
           inject: [ConfigService],
