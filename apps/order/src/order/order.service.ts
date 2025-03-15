@@ -1,23 +1,20 @@
 import {
   PAYMENT_SERVICE,
+  PaymentMicroservice,
   PRODUCT_SERVICE,
-  RpcResponse,
+  ProductMicroservice,
   USER_SERVICE,
+  UserMicroservice,
 } from '@app/common';
 import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  OnModuleInit,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientGrpc } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
-import { MakePaymentDto } from 'apps/payment/src/payment/dto/make-payment.dto';
-import {
-  Payment,
-  PaymentStatus,
-} from 'apps/payment/src/payment/entity/payment.entity';
-import { Product } from 'apps/product/src/product/entity/product.entity';
-import { User } from 'apps/user/src/user/entity/user.entity';
+import { PaymentStatus } from 'apps/payment/src/payment/entity/payment.entity';
 import { Model } from 'mongoose';
 import { lastValueFrom } from 'rxjs';
 import { AddressDto } from './dto/address.dto';
@@ -30,17 +27,36 @@ import { PaymentCancelledException } from './exception/payment-cancelled.excepti
 import { PaymentFailedException } from './exception/payment-failed.exception';
 
 @Injectable()
-export class OrderService {
+export class OrderService implements OnModuleInit {
+  userService: UserMicroservice.UserServiceClient;
+  productService: ProductMicroservice.ProductServiceClient;
+  paymentService: PaymentMicroservice.PaymentServiceClient;
   constructor(
     @Inject(USER_SERVICE)
-    private readonly userService: ClientProxy,
+    private readonly userMicroService: ClientGrpc,
     @Inject(PRODUCT_SERVICE)
-    private readonly productService: ClientProxy,
+    private readonly productMicroService: ClientGrpc,
     @Inject(PAYMENT_SERVICE)
-    private readonly paymentService: ClientProxy,
+    private readonly paymentMicroService: ClientGrpc,
     @InjectModel(Order.name)
     private readonly orderModel: Model<Order>,
   ) {}
+
+  onModuleInit() {
+    this.userService =
+      this.userMicroService.getService<UserMicroservice.UserServiceClient>(
+        'UserService',
+      );
+    this.productService =
+      this.productMicroService.getService<ProductMicroservice.ProductServiceClient>(
+        'ProductService',
+      );
+    this.paymentService =
+      this.paymentMicroService.getService<PaymentMicroservice.PaymentServiceClient>(
+        'PaymentService',
+      );
+  }
+
   async createOrder(createOrderDto: CreateOrderDto) {
     const { productIds, address, payment, meta } = createOrderDto;
     // 1) 사용자 정보 가져오기
@@ -79,7 +95,7 @@ export class OrderService {
     return orderModel;
   }
 
-  private async getUserFromToken(userId: string): Promise<User> {
+  private async getUserFromToken(userId: string) {
     // 1) User MS: JWT token 검증 => 이부분 Middleware + Guard에서 처리
     // const tokenResponse = await lastValueFrom(
     //   this.userService.send(
@@ -95,40 +111,35 @@ export class OrderService {
 
     // 2) User MS: 사용자 정보 가져오기
     // const userId = tokenResponse.data.sub;
-    const userResponse = await lastValueFrom(
-      this.userService.send({ cmd: 'get_user_info' }, { userId }),
-    );
-    if (userResponse.status === 'error') {
-      throw new PaymentCancelledException(userResponse);
+    try {
+      const userResponse = await lastValueFrom(
+        this.userService.getUserInfo({ userId }),
+      );
+      return userResponse;
+    } catch (error) {
+      throw new PaymentCancelledException(error);
     }
-
-    return userResponse.data;
   }
 
   private async getProductsByIds(
     productIds: string[],
   ): Promise<OrderProduct[]> {
-    const productResponse = await lastValueFrom(
-      this.productService.send<RpcResponse<Product[]>>(
-        {
-          cmd: 'get_products_info',
-        },
-        {
+    try {
+      const productResponse = await lastValueFrom(
+        this.productService.getProductsInfo({
           productIds,
-        },
-      ),
-    );
+        }),
+      );
 
-    if (productResponse.status == 'error') {
-      throw new PaymentCancelledException(productResponse);
+      // Product Entity로 변환
+      return productResponse.products.map((product) => ({
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+      }));
+    } catch (error) {
+      throw new PaymentCancelledException(error);
     }
-
-    // Product Entity로 변환
-    return productResponse.data.map((product) => ({
-      productId: product.id,
-      name: product.name,
-      price: product.price,
-    }));
   }
 
   private calculateTotalAmount(products: OrderProduct[]) {
@@ -141,7 +152,11 @@ export class OrderService {
     }
   }
 
-  private createCustomer(user: User): Customer {
+  private createCustomer(user: {
+    id: string;
+    email: string;
+    name: string;
+  }): Customer {
     const { id, email, name } = user;
     return {
       userId: id,
@@ -170,23 +185,14 @@ export class OrderService {
   ) {
     try {
       const paymentResponse = await lastValueFrom(
-        this.paymentService.send<RpcResponse<Payment>, MakePaymentDto>(
-          {
-            cmd: 'make_payment',
-          },
-          {
-            orderId,
-            ...paymentDto,
-            userEmail: email,
-          },
-        ),
+        this.paymentService.makePayment({
+          orderId,
+          ...paymentDto,
+          userEmail: email,
+        }),
       );
 
-      if (paymentResponse.status === 'error') {
-        throw new PaymentFailedException(paymentResponse);
-      }
-      const isPaid =
-        paymentResponse.data.paymentStatus === PaymentStatus.approved;
+      const isPaid = paymentResponse.paymentStatus === PaymentStatus.approved;
       const orderStatus = isPaid
         ? OrderStatus.paymentProcessed
         : OrderStatus.paymentFailed;
