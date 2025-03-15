@@ -31,6 +31,10 @@ async function bootstrap() {
       url: configService.getOrThrow<string>('GRPC_URL'),
     },
   });
+
+  // onModuleInit을 반드시 실행시키도록
+  await app.init();
+
   await app.startAllMicroservices();
 
   // await app.listen(process.env.HTTP_PORT ?? 3000);

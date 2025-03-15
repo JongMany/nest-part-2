@@ -7,6 +7,9 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
+  // onModuleInit을 반드시 실행시키도록
+  await app.init();
+
   await app.listen(process.env.HTTP_PORT ?? 3000);
 }
 bootstrap().then(() => {

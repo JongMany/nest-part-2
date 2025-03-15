@@ -6,6 +6,7 @@ import { OrderStatus } from './entity/order.entity';
 import { OrderService } from './order.service';
 
 @Controller('order')
+@OrderMicroservice.OrderServiceControllerMethods()
 export class OrderController
   implements OrderMicroservice.OrderServiceController
 {
