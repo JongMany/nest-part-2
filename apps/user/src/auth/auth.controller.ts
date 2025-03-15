@@ -1,20 +1,9 @@
-import {
-  Controller,
-  UnauthorizedException,
-  UseInterceptors,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Controller, UnauthorizedException } from '@nestjs/common';
 
-import { RpcInterceptor } from '@app/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { UserMicroservice } from '@app/common';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
-import { ParseBearerTokenDto } from './dto/parse-bearer-token.dto';
-import { RegisterDto } from './dto/register.dto';
-
 @Controller('auth')
-export class AuthController {
+export class AuthController implements UserMicroservice.AuthServiceController {
   constructor(private readonly authService: AuthService) {}
 
   // @Post('register')
@@ -40,22 +29,26 @@ export class AuthController {
   //   return this.authService.login(token);
   // }
 
-  @MessagePattern({
-    cmd: 'register',
-  })
-  registerUser(@Payload() registerDto: RegisterDto) {
+  // @MessagePattern({
+  //   cmd: 'register',
+  // })
+  async registerUser(registerDto: UserMicroservice.RegisterUserRequest) {
     const { token } = registerDto;
     if (token === null) {
       throw new UnauthorizedException('토큰을 입력해주세요');
     }
 
-    return this.authService.register(token, registerDto);
+    const user = await this.authService.register(token, registerDto);
+    if (!user) {
+      throw new UnauthorizedException('정상적으로 유저가 등록되지 않았습니다');
+    }
+    return user;
   }
 
-  @MessagePattern({
-    cmd: 'login',
-  })
-  loginUser(@Payload() loginDto: LoginDto) {
+  // @MessagePattern({
+  //   cmd: 'login',
+  // })
+  loginUser(loginDto: UserMicroservice.LoginUserRequest) {
     const { token } = loginDto;
     if (token === null) {
       throw new UnauthorizedException('토큰을 입력해주세요');
@@ -64,15 +57,15 @@ export class AuthController {
     return this.authService.login(token);
   }
 
-  @MessagePattern(
-    {
-      cmd: 'parse_bearer_token',
-    },
-    // Transport.TCP,
-  )
-  @UsePipes(ValidationPipe)
-  @UseInterceptors(RpcInterceptor)
-  parseBearerToken(@Payload() payload: ParseBearerTokenDto) {
+  // @MessagePattern(
+  //   {
+  //     cmd: 'parse_bearer_token',
+  //   },
+  //   // Transport.TCP,
+  // )
+  // @UsePipes(ValidationPipe)
+  // @UseInterceptors(RpcInterceptor)
+  parseBearerToken(payload: UserMicroservice.ParseBearerTokenRequest) {
     return this.authService.parseBearerToken({
       token: payload.token,
       isRefreshToken: false,
