@@ -26,7 +26,7 @@ async function bootstrap() {
       // queueOptions: {
       //   durable: false,
       // },
-      package: ProductMicroservice.PRODUCT_PACKAGE_NAME,
+      package: ProductMicroservice.protobufPackage,
       protoPath: join(process.cwd(), 'proto/product.proto'),
       url: configService.getOrThrow<string>('GRPC_URL'),
     },

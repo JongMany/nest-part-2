@@ -3,8 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 
-import { NOTIFICATION_SERVICE } from '@app/common';
+import { NOTIFICATION_SERVICE, NotificationMicroservice } from '@app/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { join } from 'path';
 import { PaymentModule } from './payment/payment.module';
 
 @Module({
@@ -32,17 +33,21 @@ import { PaymentModule } from './payment/payment.module';
           useFactory: (configService: ConfigService) => ({
             // transport: Transport.TCP,
             // transport: Transport.REDIS,
-            transport: Transport.RMQ,
+            // transport: Transport.RMQ,
+            transport: Transport.GRPC,
             options: {
               // host: configService.getOrThrow<string>('NOTIFICATION_HOST'),
               // port: configService.getOrThrow<number>('NOTIFICATION_TCP_PORT'), // 모든 TCP 통신은 3001번에서 이뤄진다
               // host: 'redis',
               // port: 6379,
-              urls: ['amqp://rabbitmq:5672'],
-              queue: 'notification_queue',
-              queueOptions: {
-                durable: false,
-              },
+              // urls: ['amqp://rabbitmq:5672'],
+              // queue: 'notification_queue',
+              // queueOptions: {
+              //   durable: false,
+              // },
+              package: NotificationMicroservice.protobufPackage,
+              protoPath: join(process.cwd(), 'proto/notification.proto'),
+              url: configService.getOrThrow<string>('NOTIFICATION_GRPC_URL'),
             },
           }),
           inject: [ConfigService],

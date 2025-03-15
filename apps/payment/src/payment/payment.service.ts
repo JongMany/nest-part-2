@@ -1,5 +1,9 @@
 import { NOTIFICATION_SERVICE } from '@app/common';
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
@@ -29,7 +33,13 @@ export class PaymentService {
       // 이 부분은 message pattern (주문 상태가 변경될 때)
       this.sendNotification(makePaymentDto.orderId, makePaymentDto.userEmail);
 
-      return this.paymentRepository.findOneBy({ id: paymentId });
+      const payment = await this.paymentRepository.findOneBy({ id: paymentId });
+      if (!payment) {
+        throw new InternalServerErrorException(
+          '서버에서 에러가 발생했습니다. 다시 시도해주세요',
+        );
+      }
+      return payment;
     } catch (error) {
       if (paymentId) {
         await this.updatePaymentStatus(paymentId, PaymentStatus.rejected);
