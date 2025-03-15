@@ -26,7 +26,7 @@ export interface CreateOrderRequest {
 }
 
 export interface CreateOrderRequest_Meta {
-  user: CreateOrderRequest_Meta_UserPayload | undefined;
+  user?: CreateOrderRequest_Meta_UserPayload | undefined;
 }
 
 export interface CreateOrderRequest_Meta_UserPayload {
@@ -55,7 +55,7 @@ export interface CreateOrderRequest_Payment {
 export interface CreateOrderResponse {
   customer: CreateOrderResponse_Customer | undefined;
   products: CreateOrderResponse_Product[];
-  deliveyrAddress: CreateOrderResponse_DeliveryAddress | undefined;
+  deliveryAddress: CreateOrderResponse_DeliveryAddress | undefined;
   status: string;
   payment: CreateOrderResponse_Payment | undefined;
 }
