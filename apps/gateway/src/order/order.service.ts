@@ -1,4 +1,9 @@
-import { ORDER_SERVICE, OrderMicroservice, UserPayloadDto } from '@app/common';
+import {
+  constructMetadata,
+  ORDER_SERVICE,
+  OrderMicroservice,
+  UserPayloadDto,
+} from '@app/common';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
@@ -24,12 +29,15 @@ export class OrderService implements OnModuleInit {
     userPayload: UserPayloadDto,
   ) {
     return lastValueFrom(
-      this.orderService.createOrder({
-        ...createOrderDto,
-        meta: {
-          user: userPayload,
+      this.orderService.createOrder(
+        {
+          ...createOrderDto,
+          meta: {
+            user: userPayload,
+          },
         },
-      }),
+        constructMetadata(OrderService.name, 'createOrder'),
+      ),
     );
   }
 }

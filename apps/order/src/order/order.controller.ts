@@ -1,6 +1,6 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseInterceptors } from '@nestjs/common';
 
-import { OrderMicroservice } from '@app/common';
+import { GrpcInterceptor, OrderMicroservice } from '@app/common';
 import { Metadata } from '@grpc/grpc-js';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderStatus } from './entity/order.entity';
@@ -8,6 +8,7 @@ import { OrderService } from './order.service';
 
 @Controller('order')
 @OrderMicroservice.OrderServiceControllerMethods()
+@UseInterceptors(GrpcInterceptor)
 export class OrderController
   implements OrderMicroservice.OrderServiceController
 {

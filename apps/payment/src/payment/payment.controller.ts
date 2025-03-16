@@ -1,11 +1,12 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseInterceptors } from '@nestjs/common';
 
-import { PaymentMicroservice } from '@app/common';
+import { GrpcInterceptor, PaymentMicroservice } from '@app/common';
 import { Metadata } from '@grpc/grpc-js';
 import { PaymentMethod } from './entity/payment.entity';
 import { PaymentService } from './payment.service';
 
 @Controller()
+@UseInterceptors(GrpcInterceptor)
 @PaymentMicroservice.PaymentServiceControllerMethods()
 export class PaymentController
   implements PaymentMicroservice.PaymentServiceController

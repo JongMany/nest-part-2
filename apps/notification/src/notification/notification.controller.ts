@@ -1,11 +1,12 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseInterceptors } from '@nestjs/common';
 
-import { NotificationMicroservice } from '@app/common';
-import { NotificationService } from './notification.service';
+import { GrpcInterceptor, NotificationMicroservice } from '@app/common';
 import { Metadata } from '@grpc/grpc-js';
+import { NotificationService } from './notification.service';
 
 @Controller()
 @NotificationMicroservice.NotificationServiceControllerMethods()
+@UseInterceptors(GrpcInterceptor)
 export class NotificationController
   implements NotificationMicroservice.NotificationServiceController
 {
@@ -18,10 +19,12 @@ export class NotificationController
   // @UseInterceptors(RpcInterceptor)
   async sendPaymentNotification(
     request: NotificationMicroservice.SendPaymentNotificationRequest,
-    metadata: Metadata
+    metadata: Metadata,
   ) {
-    const response =
-      await this.notificationService.sendPaymentNotification(request, metadata);
+    const response = await this.notificationService.sendPaymentNotification(
+      request,
+      metadata,
+    );
     const data = response?.toJSON();
     return {
       ...data,

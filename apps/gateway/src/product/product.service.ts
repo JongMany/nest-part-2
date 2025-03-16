@@ -1,4 +1,8 @@
-import { PRODUCT_SERVICE, ProductMicroservice } from '@app/common';
+import {
+  constructMetadata,
+  PRODUCT_SERVICE,
+  ProductMicroservice,
+} from '@app/common';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 
@@ -18,6 +22,9 @@ export class ProductService implements OnModuleInit {
   }
 
   createSamples() {
-    return this.productService.createSamples({});
+    return this.productService.createSamples(
+      {},
+      constructMetadata(ProductService.name, 'createSamples'),
+    );
   }
 }

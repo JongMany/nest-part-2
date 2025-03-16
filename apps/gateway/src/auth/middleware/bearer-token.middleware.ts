@@ -1,4 +1,4 @@
-import { USER_SERVICE, UserMicroservice } from '@app/common';
+import { constructMetadata, USER_SERVICE, UserMicroservice } from '@app/common';
 import {
   Inject,
   Injectable,
@@ -49,9 +49,12 @@ export class BearerTokenMiddleware implements NestMiddleware, OnModuleInit {
   async verifyToken(token: string) {
     try {
       const result = await lastValueFrom(
-        this.authService.parseBearerToken({
-          token,
-        }),
+        this.authService.parseBearerToken(
+          {
+            token,
+          },
+          constructMetadata(BearerTokenMiddleware.name, 'verifyToken'),
+        ),
       );
 
       return result;
