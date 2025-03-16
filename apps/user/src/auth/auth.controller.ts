@@ -1,6 +1,7 @@
 import { Controller, UnauthorizedException } from '@nestjs/common';
 
 import { UserMicroservice } from '@app/common';
+import { Metadata } from '@grpc/grpc-js';
 import { AuthService } from './auth.service';
 @Controller('auth')
 @UserMicroservice.AuthServiceControllerMethods()
@@ -33,13 +34,13 @@ export class AuthController implements UserMicroservice.AuthServiceController {
   // @MessagePattern({
   //   cmd: 'register',
   // })
-  async registerUser(registerDto: UserMicroservice.RegisterUserRequest) {
-    const { token } = registerDto;
+  async registerUser(request: UserMicroservice.RegisterUserRequest) {
+    const { token } = request;
     if (token === null) {
       throw new UnauthorizedException('토큰을 입력해주세요');
     }
 
-    const user = await this.authService.register(token, registerDto);
+    const user = await this.authService.register(token, request);
     console.log('user', user);
     if (!user) {
       throw new UnauthorizedException('정상적으로 유저가 등록되지 않았습니다');
@@ -50,9 +51,10 @@ export class AuthController implements UserMicroservice.AuthServiceController {
   // @MessagePattern({
   //   cmd: 'login',
   // })
-  loginUser(loginDto: UserMicroservice.LoginUserRequest) {
-    console.log('loginDto', loginDto);
-    const { token } = loginDto;
+  loginUser(request: UserMicroservice.LoginUserRequest, metadata: Metadata) {
+    console.log(metadata);
+
+    const { token } = request;
     if (token === null) {
       throw new UnauthorizedException('토큰을 입력해주세요');
     }

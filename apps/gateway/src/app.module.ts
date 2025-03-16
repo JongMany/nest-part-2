@@ -3,6 +3,7 @@ import {
   OrderMicroservice,
   PRODUCT_SERVICE,
   ProductMicroservice,
+  traceInterceptor,
   USER_SERVICE,
   UserMicroservice,
 } from '@app/common';
@@ -53,6 +54,9 @@ import { ProductModule } from './product/product.module';
               // queueOptions: {
               //   durable: false,
               // },
+              channelOptions: {
+                interceptors: [traceInterceptor('Gateway')],
+              },
               package: UserMicroservice.protobufPackage,
               protoPath: join(process.cwd(), 'proto/user.proto'),
               url: configService.getOrThrow<string>('USER_GRPC_URL'),
@@ -76,6 +80,9 @@ import { ProductModule } from './product/product.module';
               // queueOptions: {
               //   durable: false,
               // },
+              channelOptions: {
+                interceptors: [traceInterceptor('Gateway')],
+              },
               package: ProductMicroservice.protobufPackage,
               protoPath: join(process.cwd(), 'proto/product.proto'),
               url: configService.getOrThrow<string>('PRODUCT_GRPC_URL'),
@@ -99,6 +106,9 @@ import { ProductModule } from './product/product.module';
               // queueOptions: {
               //   durable: false,
               // },
+              channelOptions: {
+                interceptors: [traceInterceptor('Gateway')],
+              },
               package: OrderMicroservice.protobufPackage,
               protoPath: join(process.cwd(), 'proto/order.proto'),
               url: configService.getOrThrow<string>('ORDER_GRPC_URL'),
