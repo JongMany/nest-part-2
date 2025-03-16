@@ -1,6 +1,7 @@
 import { Controller } from '@nestjs/common';
 
 import { PaymentMicroservice } from '@app/common';
+import { Metadata } from '@grpc/grpc-js';
 import { PaymentMethod } from './entity/payment.entity';
 import { PaymentService } from './payment.service';
 
@@ -16,10 +17,16 @@ export class PaymentController
   // })
   // @UsePipes(ValidationPipe)
   // @UseInterceptors(RpcInterceptor)
-  makePayment(request: PaymentMicroservice.MakePaymentRequest) {
-    return this.paymentService.makePayment({
-      ...request,
-      paymentMethod: request.paymentMethod as PaymentMethod,
-    });
+  makePayment(
+    request: PaymentMicroservice.MakePaymentRequest,
+    metadata: Metadata,
+  ) {
+    return this.paymentService.makePayment(
+      {
+        ...request,
+        paymentMethod: request.paymentMethod as PaymentMethod,
+      },
+      metadata,
+    );
   }
 }

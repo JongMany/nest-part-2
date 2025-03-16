@@ -1,4 +1,9 @@
-import { ORDER_SERVICE, OrderMicroservice } from '@app/common';
+import {
+  constructMetadata,
+  ORDER_SERVICE,
+  OrderMicroservice,
+} from '@app/common';
+import { Metadata } from '@grpc/grpc-js';
 import {
   Inject,
   Injectable,
@@ -30,6 +35,7 @@ export class NotificationService implements OnModuleInit {
 
   async sendPaymentNotification(
     sendPaymentNotificationDto: SendPaymentNotificationDto,
+    metadata: Metadata,
   ) {
     const { to, orderId } = sendPaymentNotificationDto;
     const notification = await this.createNotification(to);
@@ -41,7 +47,7 @@ export class NotificationService implements OnModuleInit {
     );
 
     // 메일을 보냈으면 배송이 시작되었다는 뜻
-    this.sendDeliveryStartedMessage(orderId);
+    this.sendDeliveryStartedMessage(orderId, metadata);
 
     const response = await this.notificationModel.findById(notification._id);
     if (!response) {
@@ -72,9 +78,19 @@ export class NotificationService implements OnModuleInit {
     });
   }
 
-  private async sendDeliveryStartedMessage(orderId: string) {
-    this.orderService.deliveryStarted({
-      id: orderId,
-    });
+  private async sendDeliveryStartedMessage(
+    orderId: string,
+    metadata: Metadata,
+  ) {
+    this.orderService.deliveryStarted(
+      {
+        id: orderId,
+      },
+      constructMetadata(
+        NotificationService.name,
+        'sendDeliveryStartedMessage',
+        metadata,
+      ),
+    );
   }
 }

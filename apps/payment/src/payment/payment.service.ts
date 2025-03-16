@@ -1,4 +1,9 @@
-import { NOTIFICATION_SERVICE, NotificationMicroservice } from '@app/common';
+import {
+  constructMetadata,
+  NOTIFICATION_SERVICE,
+  NotificationMicroservice,
+} from '@app/common';
+import { Metadata } from '@grpc/grpc-js';
 import {
   Inject,
   Injectable,
@@ -29,7 +34,7 @@ export class PaymentService implements OnModuleInit {
       );
   }
 
-  async makePayment(makePaymentDto: MakePaymentDto) {
+  async makePayment(makePaymentDto: MakePaymentDto, metadata: Metadata) {
     let paymentId: string = '';
     try {
       const result = await this.paymentRepository.save(makePaymentDto);
@@ -40,7 +45,11 @@ export class PaymentService implements OnModuleInit {
       await this.updatePaymentStatus(paymentId, PaymentStatus.approved);
 
       // 이 부분은 message pattern (주문 상태가 변경될 때)
-      this.sendNotification(makePaymentDto.orderId, makePaymentDto.userEmail);
+      this.sendNotification(
+        makePaymentDto.orderId,
+        makePaymentDto.userEmail,
+        metadata,
+      );
 
       const payment = await this.paymentRepository.findOneBy({ id: paymentId });
       if (!payment) {
@@ -76,12 +85,19 @@ export class PaymentService implements OnModuleInit {
     );
   }
 
-  private async sendNotification(orderId: string, to: string) {
+  private async sendNotification(
+    orderId: string,
+    to: string,
+    metadata: Metadata,
+  ) {
     const response = await lastValueFrom(
-      this.notificationService.sendPaymentNotification({
-        to,
-        orderId,
-      }),
+      this.notificationService.sendPaymentNotification(
+        {
+          to,
+          orderId,
+        },
+        constructMetadata(PaymentService.name, 'sendNotification', metadata),
+      ),
     );
   }
 }

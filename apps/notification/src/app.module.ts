@@ -3,7 +3,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import * as Joi from 'joi';
 
-import { ORDER_SERVICE, OrderMicroservice } from '@app/common';
+import {
+  ORDER_SERVICE,
+  OrderMicroservice,
+  traceInterceptor,
+} from '@app/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 import { NotificationModule } from './notification/notification.module';
@@ -43,6 +47,9 @@ import { NotificationModule } from './notification/notification.module';
               // queueOptions: {
               //   durable: false,
               // },
+              channelOptions: {
+                interceptors: [traceInterceptor('Notification')],
+              },
               package: OrderMicroservice.protobufPackage,
               protoPath: join(process.cwd(), 'proto/order.proto'),
               url: configService.getOrThrow<string>('ORDER_GRPC_URL'),

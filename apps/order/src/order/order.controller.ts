@@ -1,6 +1,7 @@
 import { Controller } from '@nestjs/common';
 
 import { OrderMicroservice } from '@app/common';
+import { Metadata } from '@grpc/grpc-js';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderStatus } from './entity/order.entity';
 import { OrderService } from './order.service';
@@ -23,8 +24,11 @@ export class OrderController
   // @MessagePattern({
   //   cmd: 'create_order',
   // })
-  async createOrder(request: OrderMicroservice.CreateOrderRequest) {
-    return this.orderService.createOrder(request as CreateOrderDto);
+  async createOrder(
+    request: OrderMicroservice.CreateOrderRequest,
+    metadata: Metadata,
+  ) {
+    return this.orderService.createOrder(request as CreateOrderDto, metadata);
   }
 
   // @EventPattern({

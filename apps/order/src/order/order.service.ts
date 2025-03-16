@@ -1,4 +1,5 @@
 import {
+  constructMetadata,
   PAYMENT_SERVICE,
   PaymentMicroservice,
   PRODUCT_SERVICE,
@@ -6,6 +7,7 @@ import {
   USER_SERVICE,
   UserMicroservice,
 } from '@app/common';
+import { Metadata } from '@grpc/grpc-js';
 import {
   Inject,
   Injectable,
@@ -57,13 +59,13 @@ export class OrderService implements OnModuleInit {
       );
   }
 
-  async createOrder(createOrderDto: CreateOrderDto) {
+  async createOrder(createOrderDto: CreateOrderDto, metadata: Metadata) {
     const { productIds, address, payment, meta } = createOrderDto;
     // 1) 사용자 정보 가져오기
-    const user = await this.getUserFromToken(meta.user.sub);
+    const user = await this.getUserFromToken(meta.user.sub, metadata);
 
     // 2) 상품 정보 가져오기
-    const products = await this.getProductsByIds(productIds);
+    const products = await this.getProductsByIds(productIds, metadata);
 
     // 3) 총 금액 계산
     const totalAmount = this.calculateTotalAmount(products);
@@ -85,6 +87,7 @@ export class OrderService implements OnModuleInit {
       order._id.toString(),
       payment,
       user.email,
+      metadata,
     );
 
     // 7) 결과 반환
@@ -95,7 +98,7 @@ export class OrderService implements OnModuleInit {
     return orderModel;
   }
 
-  private async getUserFromToken(userId: string) {
+  private async getUserFromToken(userId: string, metadata: Metadata) {
     // 1) User MS: JWT token 검증 => 이부분 Middleware + Guard에서 처리
     // const tokenResponse = await lastValueFrom(
     //   this.userService.send(
@@ -113,7 +116,10 @@ export class OrderService implements OnModuleInit {
     // const userId = tokenResponse.data.sub;
     try {
       const userResponse = await lastValueFrom(
-        this.userService.getUserInfo({ userId }),
+        this.userService.getUserInfo(
+          { userId },
+          constructMetadata(OrderService.name, 'getUserFromToken', metadata),
+        ),
       );
       return userResponse;
     } catch (error) {
@@ -123,12 +129,16 @@ export class OrderService implements OnModuleInit {
 
   private async getProductsByIds(
     productIds: string[],
+    metadata: Metadata,
   ): Promise<OrderProduct[]> {
     try {
       const productResponse = await lastValueFrom(
-        this.productService.getProductsInfo({
-          productIds,
-        }),
+        this.productService.getProductsInfo(
+          {
+            productIds,
+          },
+          constructMetadata(OrderService.name, 'getProductsByIds', metadata),
+        ),
       );
 
       // Product Entity로 변환
@@ -182,14 +192,18 @@ export class OrderService implements OnModuleInit {
     orderId: string,
     paymentDto: PaymentDto,
     email: string,
+    metadata: Metadata,
   ) {
     try {
       const paymentResponse = await lastValueFrom(
-        this.paymentService.makePayment({
-          orderId,
-          ...paymentDto,
-          userEmail: email,
-        }),
+        this.paymentService.makePayment(
+          {
+            orderId,
+            ...paymentDto,
+            userEmail: email,
+          },
+          constructMetadata(OrderService.name, 'processPayment', metadata),
+        ),
       );
 
       const isPaid = paymentResponse.paymentStatus === PaymentStatus.approved;

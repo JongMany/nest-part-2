@@ -9,6 +9,7 @@ import {
   PaymentMicroservice,
   PRODUCT_SERVICE,
   ProductMicroservice,
+  traceInterceptor,
   USER_SERVICE,
   UserMicroservice,
 } from '@app/common';
@@ -57,6 +58,9 @@ import { OrderModule } from './order/order.module';
               // queueOptions: {
               //   durable: false,
               // },
+              channelOptions: {
+                interceptors: [traceInterceptor('Order')],
+              },
               package: UserMicroservice.protobufPackage,
               protoPath: join(process.cwd(), 'proto/user.proto'),
               url: configService.getOrThrow<string>('USER_GRPC_URL'),
@@ -81,6 +85,9 @@ import { OrderModule } from './order/order.module';
               // queueOptions: {
               //   durable: false,
               // },
+              channelOptions: {
+                interceptors: [traceInterceptor('Order')],
+              },
               package: ProductMicroservice.protobufPackage,
               protoPath: join(process.cwd(), 'proto/product.proto'),
               url: configService.getOrThrow<string>('PRODUCT_GRPC_URL'),
@@ -105,6 +112,9 @@ import { OrderModule } from './order/order.module';
               // queueOptions: {
               //   durable: false,
               // },
+              channelOptions: {
+                interceptors: [traceInterceptor('Order')],
+              },
               package: PaymentMicroservice.protobufPackage,
               protoPath: join(process.cwd(), 'proto/payment.proto'),
               url: configService.getOrThrow<string>('PAYMENT_GRPC_URL'),
