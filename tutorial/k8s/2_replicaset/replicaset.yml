@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: nginx-replicaset
+  labels:
+    app: nginx-app
+    type: back-end
+
+spec:
+  replicas: 3 # 3개의 Pod를 실행
+  template:
+    metadata:
+      labels: # spec에 적용된 컨테이너에 적용될 레이블
+        app: nginx-app
+        type: back-end
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx
+          ports:
+            - containerPort: 80
+  selector:
+    matchLabels: # template metadata의 값
+      app: nginx-app
+      type: back-end
