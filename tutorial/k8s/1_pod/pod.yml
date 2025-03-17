@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-app # 필수
+  labels:
+    app: nginx-app
+    typo: back-end
+spec:
+  containers:
+    - name: nginx-app
+      image: nginx
+      ports:
+        - containerPort: 80
