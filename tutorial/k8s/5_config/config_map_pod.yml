@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  labels:
+    name: nginx-app
+    type: back-end
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+      resources:
+        limits:
+          memory: '128Mi'
+          cpu: '500m'
+      ports:
+        - containerPort: 80
+      envFrom:
+        - configMapRef:
+            name: nginx-config # config_map의 metadata name
