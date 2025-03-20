@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx-app
+    type: back-end
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx-app
+      type: back-end
+  template:
+    metadata:
+      labels:
+        app: nginx-app
+        type: back-end
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx
+          resources:
+            limits:
+              memory: '128Mi'
+              cpu: '500m'
+          ports:
+            - containerPort: 80
