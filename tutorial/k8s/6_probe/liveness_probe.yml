@@ -21,9 +21,10 @@ spec:
               cpu: '500m'
           ports:
             - containerPort: 80
-          readinessProbe:
+          livenessProbe:
             httpGet:
-              path: /
+              path: /not-alive
               port: 80
             initialDelaySeconds: 5
             periodSeconds: 5
+          
