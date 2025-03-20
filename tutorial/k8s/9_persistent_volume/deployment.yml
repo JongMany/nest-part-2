@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-pvc-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+          resources:
+            limits:
+              memory: '128Mi'
+              cpu: '500m'
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-storage
+              mountPath: /usr/share/nginx/html
+      volumes:
+        - name: nginx-storage
+          persistentVolumeClaim:
+            claimName: nginx-pvc
+# kubectl exec -it nginx-pvc-deployment-785d8bfd87-8zhnn -- /bin/sh
+# echo "<h1>Persistent Volume Test</h1>" > /usr/share/nginx/html/index.html
+# kubectl port-forward nginx-pvc-deployment-785d8bfd87-8zhnn 8080:80
+# kubectl port-forward nginx-pvc-deployment-785d8bfd87-8zhnn 8080:80
