@@ -16,7 +16,6 @@ import {
 } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
-import { PaymentStatus } from 'apps/payment/src/payment/entity/payment.entity';
 import { Model } from 'mongoose';
 import { lastValueFrom } from 'rxjs';
 import { AddressDto } from './dto/address.dto';
@@ -24,6 +23,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { PaymentDto } from './dto/payment.dto';
 import { Customer } from './entity/customer.entity';
 import { Order, OrderStatus } from './entity/order.entity';
+import { PaymentStatus } from './entity/payment.entity';
 import { Product as OrderProduct } from './entity/product.entity';
 import { PaymentCancelledException } from './exception/payment-cancelled.exception';
 import { PaymentFailedException } from './exception/payment-failed.exception';

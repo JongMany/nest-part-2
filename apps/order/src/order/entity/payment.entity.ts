@@ -1,5 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
+export enum PaymentStatus {
+  pending = 'Pending',
+  rejected = 'Rejected',
+  approved = 'Approved',
+}
+
 export enum PaymentMethod {
   creditCard = 'CreditCard',
   kakao = 'Kakao',
