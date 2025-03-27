@@ -1,23 +1,12 @@
+import {
+  NotificationStatus,
+  PaymentMethod,
+  PaymentStatus,
+} from 'apps/payment/src/payment/domain/payment.domain';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-export enum PaymentStatus {
-  pending = 'Pending',
-  rejected = 'Rejected',
-  approved = 'Approved',
-}
-
-export enum PaymentMethod {
-  creditCard = 'CreditCard',
-  kakao = 'Kakao',
-}
-
-export enum NotificationStatus {
-  pending = 'Pending',
-  send = 'Sent',
-}
-
 @Entity()
-export class Payment {
+export class PaymentEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -53,4 +42,13 @@ export class Payment {
     default: NotificationStatus.pending,
   })
   notificationStatus: NotificationStatus;
+
+  @Column()
+  orderId: string;
+
+  @Column()
+  amount: number;
+
+  @Column()
+  userEmail: string;
 }

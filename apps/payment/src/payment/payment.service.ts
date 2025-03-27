@@ -14,8 +14,11 @@ import { ClientGrpc } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 import { Repository } from 'typeorm';
+import {
+  Payment,
+  PaymentStatus,
+} from './adapter/output/typeorm/entity/payment.entity';
 import { MakePaymentDto } from './dto/make-payment.dto';
-import { Payment, PaymentStatus } from './entity/payment.entity';
 
 @Injectable()
 export class PaymentService implements OnModuleInit {

@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { PaymentMethod, PaymentModel } from '../domain/payment.domain';
 import { DatabaseOutputPort } from '../port/output/database.output-port';
 import { NetworkOutputPort } from '../port/output/network.output-port';
@@ -15,6 +16,7 @@ class MakePaymentDto {
   amount: number;
 }
 
+@Injectable()
 export class PaymentService {
   constructor(
     private readonly databaseOutputPort: DatabaseOutputPort,
