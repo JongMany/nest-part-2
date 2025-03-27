@@ -2,8 +2,8 @@ import { Controller, UseInterceptors } from '@nestjs/common';
 
 import { GrpcInterceptor, PaymentMicroservice } from '@app/common';
 import { Metadata } from '@grpc/grpc-js';
-import { PaymentMethod } from './entity/payment.entity';
-import { PaymentService } from './payment.service';
+import { PaymentMethod } from '../../domain/payment.domain';
+import { PaymentService } from '../../payment.service';
 
 @Controller()
 @UseInterceptors(GrpcInterceptor)
